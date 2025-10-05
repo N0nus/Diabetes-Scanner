@@ -1,0 +1,445 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Diabetes Risk Screener</title>
+  <style>
+    :root {
+      --bg: #f6f8fb;
+      --card: #fff;
+      --accent: #2563eb;
+      --accent-dark: #1e40af;
+      --muted: #6b7280;
+      --error: #dc2626;
+      --success: #16a34a;
+      --shadow: rgba(15, 23, 42, 0.15);
+      --font-family: 'Inter', system-ui, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+    }
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+    body {
+      font-family: var(--font-family);
+      background: var(--bg);
+      margin: 0;
+      color: #0f172a;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 40px 20px;
+      transition: background 0.3s ease;
+    }
+    .container {
+      max-width: 900px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .card {
+      background: var(--card);
+      padding: 32px 36px;
+      border-radius: 16px;
+      box-shadow: 0 8px 24px var(--shadow);
+      transition: box-shadow 0.3s ease;
+    }
+    .card:hover {
+      box-shadow: 0 12px 36px var(--shadow);
+    }
+    h2 {
+      margin-top: 0;
+      margin-bottom: 28px;
+      font-weight: 700;
+      color: var(--accent);
+      text-align: center;
+      font-size: 2.2rem;
+      letter-spacing: 0.04em;
+    }
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 8px;
+      margin-top: 20px;
+      color: #334155;
+      font-size: 1.05rem;
+    }
+    select,
+    input[type="number"] {
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1.8px solid #e6e9ef;
+      width: 100%;
+      box-sizing: border-box;
+      font-size: 1.1rem;
+      color: #334155;
+      transition: border-color 0.3s ease;
+    }
+    select:focus,
+    input[type="number"]:focus {
+      border-color: var(--accent);
+      outline: none;
+      box-shadow: 0 0 8px var(--accent);
+    }
+    input[readonly] {
+      background: #e9ecef;
+      color: #6b7280;
+      cursor: not-allowed;
+    }
+    .btn {
+      background: var(--accent);
+      color: white;
+      padding: 14px 26px;
+      border-radius: 14px;
+      border: 0;
+      cursor: pointer;
+      margin-right: 10px;
+      font-weight: 700;
+      font-size: 1.15rem;
+      transition: background-color 0.25s ease, box-shadow 0.25s ease;
+      box-shadow: 0 6px 15px rgba(37, 99, 235, 0.3);
+    }
+    .btn:hover {
+      background: var(--accent-dark);
+      box-shadow: 0 8px 22px rgba(30, 64, 175, 0.5);
+    }
+    .btn.secondary {
+      background: #e5e7eb;
+      color: #111;
+      box-shadow: none;
+    }
+    .btn.secondary:hover {
+      background: #d1d5db;
+    }
+    .row {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .col-2 {
+      flex: 1 1 48%;
+    }
+    #result {
+      margin-top: 28px;
+      font-weight: 700;
+      font-size: 1.3rem;
+      text-align: center;
+      min-height: 1.6em;
+      color: var(--accent-dark);
+      letter-spacing: 0.03em;
+      user-select: none;
+    }
+    #result.error {
+      color: var(--error);
+    }
+    #result.success {
+      color: var(--success);
+    }
+    footer {
+      margin-top: 38px;
+      font-size: 13px;
+      color: var(--muted);
+      text-align: center;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container" role="main">
+    <div class="card" aria-labelledby="form-title">
+      <h2 id="form-title">Diabetes Risk Screener</h2>
+      <form id="form" novalidate autocomplete="off" aria-describedby="form-desc">
+        
+        <!-- Height & Weight row -->
+        <div class="row">
+          <div class="col-2">
+            <label for="Height">Height (cm) <span style="color:var(--error)">*</span></label>
+            <input type="number" id="Height" name="Height" min="50" max="250" step="0.1" placeholder="e.g. 170" required aria-required="true" />
+          </div>
+          <div class="col-2">
+            <label for="Weight">Weight (kg) <span style="color:var(--error)">*</span></label>
+            <input type="number" id="Weight" name="Weight" min="20" max="300" step="0.1" placeholder="e.g. 70" required aria-required="true" />
+          </div>
+        </div>
+
+        <label for="BMI">Calculated BMI</label>
+        <input name="BMI" id="BMI" type="number" step="0.1" readonly placeholder="Calculated automatically" aria-readonly="true" />
+
+        <label for="Age">Age range <span style="color:var(--error)">*</span></label>
+        <select name="Age" id="Age" required aria-required="true" aria-describedby="ageHelp">
+          <option value="" disabled selected>Choose age range</option>
+          <option value="1">18–24</option>
+          <option value="2">25–29</option>
+          <option value="3">30–34</option>
+          <option value="4">35–39</option>
+          <option value="5">40–44</option>
+          <option value="6">45–49</option>
+          <option value="7">50–54</option>
+          <option value="8">55–59</option>
+          <option value="9">60–64</option>
+          <option value="10">65–69</option>
+          <option value="11">70–74</option>
+          <option value="12">75–79</option>
+          <option value="13">80+</option>
+        </select>
+
+        <label for="Sex">Sex <span style="color:var(--error)">*</span></label>
+        <select name="Sex" id="Sex" required aria-required="true">
+          <option value="" disabled selected>Select sex</option>
+          <option value="0">Female</option>
+          <option value="1">Male</option>
+        </select>
+
+        <label for="Education">Education level</label>
+        <select name="Education" id="Education">
+          <option value="" disabled selected>Select education level</option>
+          <option value="1">No schooling / Kindergarten</option>
+          <option value="2">Elementary</option>
+          <option value="3">Some high school</option>
+          <option value="4">High school / GED</option>
+          <option value="5">Some college</option>
+          <option value="6">College graduate</option>
+        </select>
+
+        <label for="Income">Income</label>
+        <select name="Income" id="Income">
+          <option value="" disabled selected>Select income range</option>
+          <option value="1">Less than $10,000</option>
+          <option value="2">$10k–$15k</option>
+          <option value="3">$15k–$25k</option>
+          <option value="4">$25k–$35k</option>
+          <option value="5">$35k–$49k</option>
+          <option value="6">$50k–$74k</option>
+          <option value="7">$75k or more</option>
+        </select>
+
+        <label for="Smoker">Smoked 100+ cigarettes in life?</label>
+        <select name="Smoker" id="Smoker">
+          <option value="" disabled selected>Select an option</option>
+          <option value="0">No</option>
+          <option value="1">Yes</option>
+        </select>
+
+        <label for="PhysActivity">Physical activity past 30 days?</label>
+        <select name="PhysActivity" id="PhysActivity">
+          <option value="" disabled selected>Select an option</option>
+          <option value="1">Yes</option>
+          <option value="0">No</option>
+        </select>
+
+        <label for="HvyAlcoholConsump">Heavy alcohol use?</label>
+        <select name="HvyAlcoholConsump" id="HvyAlcoholConsump">
+          <option value="" disabled selected>Select an option</option>
+          <option value="0">No</option>
+          <option value="1">Yes</option>
+        </select>
+
+        <label for="Fruits">Fruit daily?</label>
+        <select name="Fruits" id="Fruits">
+          <option value="" disabled selected>Select an option</option>
+          <option value="1">Yes</option>
+          <option value="0">No</option>
+        </select>
+
+        <label for="Veggies">Vegetables daily?</label>
+        <select name="Veggies" id="Veggies">
+          <option value="" disabled selected>Select an option</option>
+          <option value="1">Yes</option>
+          <option value="0">No</option>
+        </select>
+
+        <label for="HighBP">High blood pressure?</label>
+        <select name="HighBP" id="HighBP">
+          <option value="" disabled selected>Select an option</option>
+          <option value="0">No</option>
+          <option value="1">Yes</option>
+        </select>
+
+        <label for="HighChol">High cholesterol?</label>
+        <select name="HighChol" id="HighChol">
+          <option value="" disabled selected>Select an option</option>
+          <option value="0">No</option>
+          <option value="1">Yes</option>
+        </select>
+
+        <label for="CholCheck">Cholesterol check in last 5 years?</label>
+        <select name="CholCheck" id="CholCheck">
+          <option value="" disabled selected>Select an option</option>
+          <option value="1">Yes</option>
+          <option value="0">No</option>
+        </select>
+
+        <label for="Stroke">Ever had stroke?</label>
+        <select name="Stroke" id="Stroke">
+          <option value="" disabled selected>Select an option</option>
+          <option value="0">No</option>
+          <option value="1">Yes</option>
+        </select>
+
+        <label for="HeartDiseaseorAttack">Heart disease / heart attack?</label>
+        <select name="HeartDiseaseorAttack" id="HeartDiseaseorAttack">
+          <option value="" disabled selected>Select an option</option>
+          <option value="0">No</option>
+          <option value="1">Yes</option>
+        </select>
+
+        <label for="DiffWalk">Difficulty walking/climbing?</label>
+        <select name="DiffWalk" id="DiffWalk">
+          <option value="" disabled selected>Select an option</option>
+          <option value="0">No</option>
+          <option value="1">Yes</option>
+        </select>
+
+        <label for="GenHlth">General health</label>
+        <select name="GenHlth" id="GenHlth">
+          <option value="" disabled selected>Select general health</option>
+          <option value="1">Excellent</option>
+          <option value="2">Very good</option>
+          <option value="3">Good</option>
+          <option value="4">Fair</option>
+          <option value="5">Poor</option>
+        </select>
+
+        <label for="AnyHealthcare">Healthcare coverage?</label>
+        <select name="AnyHealthcare" id="AnyHealthcare">
+          <option value="" disabled selected>Select an option</option>
+          <option value="1">Yes</option>
+          <option value="0">No</option>
+        </select>
+
+        <label for="NoDocbcCost">Cost prevented doctor visit?</label>
+        <select name="NoDocbcCost" id="NoDocbcCost">
+          <option value="" disabled selected>Select an option</option>
+          <option value="0">No</option>
+          <option value="1">Yes</option>
+        </select>
+
+        <label for="MentHlth">Mental health (days last 30 with poor mental health)</label>
+        <input name="MentHlth" id="MentHlth" type="number" min="0" max="30" placeholder="0" value="0" />
+
+        <label for="PhysHlth">Physical health (days last 30 with poor physical health)</label>
+        <input name="PhysHlth" id="PhysHlth" type="number" min="0" max="30" placeholder="0" value="0" />
+
+        <div style="margin-top:32px; text-align:center;">
+          <button class="btn" type="button" id="runBtn" aria-label="Check diabetes risk">Check Risk</button>
+          <button class="btn secondary" type="reset" id="resetBtn" aria-label="Reset form">Reset</button>
+        </div>
+      </form>
+      <div id="result" role="alert" aria-live="polite"></div>
+    </div>
+  </div>
+
+  <script>
+    // Calculate BMI when height or weight changes
+    function calculateBMI() {
+      const heightInput = document.getElementById('Height');
+      const weightInput = document.getElementById('Weight');
+      const bmiInput = document.getElementById('BMI');
+
+      const heightCm = parseFloat(heightInput.value);
+      const weightKg = parseFloat(weightInput.value);
+
+      if (heightCm > 0 && weightKg > 0) {
+        const heightM = heightCm / 100;
+        const bmi = weightKg / (heightM * heightM);
+        bmiInput.value = bmi.toFixed(1);
+      } else {
+        bmiInput.value = '';
+      }
+    }
+
+    document.getElementById('Height').addEventListener('input', calculateBMI);
+    document.getElementById('Weight').addEventListener('input', calculateBMI);
+
+    // Default values for optional selects if left blank
+    // These are chosen based on most likely / safe default values
+    const defaultValues = {
+      Education: '4',
+      Income: '1',
+      Smoker: '0',
+      PhysActivity: '1',
+      HvyAlcoholConsump: '0',
+      Fruits: '0',
+      Veggies: '0',
+      HighBP: '0',
+      HighChol: '0',
+      CholCheck: '1',
+      Stroke: '0',
+      HeartDiseaseorAttack: '0',
+      DiffWalk: '0',
+      GenHlth: '3', // 'Good' health as middle ground default
+      AnyHealthcare: '1',
+      NoDocbcCost: '0',
+    };
+
+    document.getElementById("runBtn").addEventListener("click", async () => {
+      const form = document.getElementById("form");
+
+      // Check mandatory fields manually
+      const requiredFields = ['Height', 'Weight', 'Age', 'Sex'];
+      for (const id of requiredFields) {
+        const el = document.getElementById(id);
+        if (!el.value) {
+          alert(`Please fill out the required field: ${el.previousElementSibling.innerText.replace('*','').trim()}`);
+          el.focus();
+          return;
+        }
+      }
+
+      // Also check if BMI is calculated
+      if (!document.getElementById("BMI").value) {
+        alert("BMI could not be calculated. Please check your Height and Weight inputs.");
+        return;
+      }
+
+      // Fill missing optional fields with defaults behind the scenes
+      for (const [id, defaultValue] of Object.entries(defaultValues)) {
+        const el = document.getElementById(id);
+        if (el && !el.value) {
+          el.value = defaultValue;
+        }
+      }
+
+      // Collect form data
+      const formData = new FormData(form);
+
+      // Send to backend
+      try {
+        const response = await fetch("/predict", {
+          method: "POST",
+          body: formData,
+        });
+
+        const result = await response.json();
+
+        const resultDiv = document.getElementById("result");
+        if (response.ok) {
+          let msg = "Prediction: ";
+          if (result.prediction === 0) {
+            msg += "No diabetes risk detected";
+            resultDiv.classList.remove('error');
+            resultDiv.classList.add('success');
+          } else {
+            msg += "Possible prediabetes/diabetes risk";
+            resultDiv.classList.remove('success');
+            resultDiv.classList.add('error');
+          }
+          resultDiv.innerText = msg;
+        } else {
+          document.getElementById("result").innerText = "Error: " + (result.error || "Invalid input");
+          document.getElementById("result").classList.add('error');
+        }
+      } catch (e) {
+        const resultDiv = document.getElementById("result");
+        resultDiv.innerText = "Network error. Please try again later.";
+        resultDiv.classList.add('error');
+      }
+    });
+
+    // Clear result and BMI on reset
+    document.getElementById("resetBtn").addEventListener("click", () => {
+      document.getElementById("result").innerText = "";
+      document.getElementById("BMI").value = "";
+    });
+  </script>
+</body>
+</html>
